@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ComicShader 7
+  m_Shader: {fileID: 4800000, guid: 49c97d14058808947a0615ba4f13737e, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 4000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Texture0:
+        m_Texture: {fileID: 2800000, guid: 94cd628d3d8e07d40a85d82b3fdad15d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _DotSize: 2
+    - _EdgeLength: 15
+    - _Float2: 1
+    - _Scale: 100
+    - _Shading1: 0
+    - _Shading2: 1
+    - __dirty: 0
+    m_Colors:
+    - _DotColor: {r: 0.3962264, g: 0.293058, b: 0.293058, a: 0}
+    - _LightDir: {r: -1.45, g: 1, b: 1, a: 0}
+  m_BuildTextureStacks: []
