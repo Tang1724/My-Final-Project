@@ -28,17 +28,29 @@ public class EdgeDetectNormalsAndDepth : MonoBehaviour {
 
 	//仅对不透明物体进行后处理
 	[ImageEffectOpaque]
-	void OnRenderImage (RenderTexture src, RenderTexture dest) {
-		if (edgeDetectMaterial != null) {
-			edgeDetectMaterial.SetFloat("_EdgeOnly", edgesOnly);
-			edgeDetectMaterial.SetColor("_EdgeColor", edgeColor);
-			edgeDetectMaterial.SetColor("_BackgroundColor", backgroundColor);
-			edgeDetectMaterial.SetFloat("_SampleDistance", sampleDistance);
-			edgeDetectMaterial.SetVector("_Sensitivity", new Vector4(sensitivityNormals, sensitivityDepth, 0.0f, 0.0f));
+void OnRenderImage(RenderTexture src, RenderTexture dest)
+{
+    if (edgeDetectMaterial != null)
+    {
+        edgeDetectMaterial.SetFloat("_EdgeOnly", edgesOnly);
+        edgeDetectMaterial.SetColor("_EdgeColor", edgeColor);
+        edgeDetectMaterial.SetColor("_BackgroundColor", backgroundColor);
+        edgeDetectMaterial.SetFloat("_SampleDistance", sampleDistance);
+        edgeDetectMaterial.SetVector("_Sensitivity", new Vector4(sensitivityNormals, sensitivityDepth, 0.0f, 0.0f));
 
-			Graphics.Blit(src, dest, edgeDetectMaterial);
-		} else {
-			Graphics.Blit(src, dest);
-		}
-	}
+        // ✅ 手动传入 texel size
+        edgeDetectMaterial.SetVector("_MainTex_TexelSize", new Vector4(
+            1.0f / src.width,
+            1.0f / src.height,
+            src.width,
+            src.height
+        ));
+
+        Graphics.Blit(src, dest, edgeDetectMaterial);
+    }
+    else
+    {
+        Graphics.Blit(src, dest);
+    }
+}
 }

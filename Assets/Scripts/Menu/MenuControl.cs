@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuControl : MonoBehaviour
 {
     public GameObject pauseMenuUI;
-
+    [SerializeField] private MouseLockController mouseLockController;
+    
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -32,6 +31,10 @@ public class MenuControl : MonoBehaviour
         
         // 恢复正常时间流速
         Time.timeScale = 1f;
+        
+        // 通知鼠标锁定控制器
+        if (mouseLockController != null)
+            mouseLockController.OnMenuClosed();
     }
 
     public void Pause()
@@ -44,6 +47,10 @@ public class MenuControl : MonoBehaviour
         
         // 暂停背景音乐
         AudioManager.instance.PauseMusic();
+        
+        // 通知鼠标锁定控制器
+        if (mouseLockController != null)
+            mouseLockController.OnMenuOpened();
     }
 
     public void LoadMainMenu()
@@ -53,9 +60,6 @@ public class MenuControl : MonoBehaviour
         
         // 加载主菜单场景
         SceneManager.LoadScene("Menu");
-        
-        // 确保时间恢复正常
-        Resume();
     }
 
     public void QuitGame()
