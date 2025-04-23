@@ -171,7 +171,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.7058824, g: 0.8627451, b: 0.7058824, a: 1}
-  m_Intensity: 25
+  m_Intensity: 30
   m_Range: 15
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -231,7 +231,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4546261147769522580}
   - component: {fileID: 5882015705467966528}
-  m_Layer: 6
+  m_Layer: 12
   m_Name: CameraAuido
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,19 +430,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8391222552659086748, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -8276582122200695466, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -7029948723529949830, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -5568371526223589888, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Name
@@ -450,15 +450,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 1129496810705857465, guid: 652c29a7676a147448f1a0232c170058, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6652d579100d76e48ae20272a9aad713, type: 2}
     - target: {fileID: 4131943214640138554, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8700725330082129686, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -479,6 +483,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 652c29a7676a147448f1a0232c170058, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4138328018925771117}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 652c29a7676a147448f1a0232c170058, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2098544606164131706}
   m_SourcePrefab: {fileID: 100100000, guid: 652c29a7676a147448f1a0232c170058, type: 3}
 --- !u!1 &3958597552723426956 stripped
 GameObject:
@@ -504,8 +511,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.5413519, z: 1}
+  m_Center: {x: 0, y: 0.22932404, z: 0}
 --- !u!114 &4138328018925771117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,6 +528,30 @@ MonoBehaviour:
   spot1: {fileID: 3222515890074483658}
   spot2: {fileID: 6609894003491927870}
   IsSpotlightOn: 1
+  insideDetectors:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &2098544606164131706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3958597552723426956}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f27e45826eb38f40a19294f8313c94b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followPoint: {fileID: 0}
+  referencePoint: {fileID: 0}
+  playerUnstickPoint: {fileID: 0}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  skinWidth: 0.05
+  unstickDistance: 0.8
 --- !u!4 &4441696215154762806 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 652c29a7676a147448f1a0232c170058, type: 3}

@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerControl : MonoBehaviour
 {
     private CharacterController cc;
@@ -20,28 +22,35 @@ public class PlayerControl : MonoBehaviour
     public float maxFallSpeed = -50f;
     private Vector3 velocity;
 
-    [Header("多地面检测点")]
-    public Transform[] groundChecks; // 改为数组形式
+    [Header("地面检测")]
+    public Transform[] groundChecks;     // 多个检测点
     public float checkRadius = 0.3f;
-    public LayerMask groundLayer;
+
+    [Tooltip("可被识别为地面的图层，支持多选")] 
+    public LayerMask groundLayerMask;    // ✅ 多选 LayerMask
+
     public bool isGrounded;
 
     private Vector3 moveDirection;
     private bool isMoving;
 
+    [Header("控制器引用")]
+    public MinecraftFlightController flyController; // 拖拽赋值
+
     private void Start()
     {
         cc = GetComponent<CharacterController>();
         jumpCount = maxJumpCount;
-        
-        // 安全检测
+
         if (groundChecks == null || groundChecks.Length == 0)
         {
             Debug.LogError("未设置地面检测点！");
         }
     }
+
     private void Update()
     {
+        if (!enabled) return; 
         CheckGroundStatus();
         CacheJumpInput();
         ProcessMovementInput();
@@ -49,23 +58,27 @@ public class PlayerControl : MonoBehaviour
         ApplyGravity();
         Move();
         HandleFootstepSound();
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ResetCurrentScene();
+        }
     }
-    // 修改后的多检测点地面检测
+
     private void CheckGroundStatus()
     {
         bool wasGrounded = isGrounded;
         isGrounded = false;
-        
-        // 检查所有检测点
+
         foreach (Transform check in groundChecks)
         {
-            if (Physics.CheckSphere(check.position, checkRadius, groundLayer))
+            if (Physics.CheckSphere(check.position, checkRadius, groundLayerMask))
             {
                 isGrounded = true;
-                break; // 只要一个检测点命中就退出循环
+                break;
             }
         }
-        // 重置跳跃次数
+
         if (isGrounded && !wasGrounded)
         {
             jumpCount = maxJumpCount;
@@ -105,10 +118,8 @@ public class PlayerControl : MonoBehaviour
 
     private void ApplyGravity()
     {
-        // 使用 Unity 自带重力乘以倍数
         velocity.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
 
-        // 限制最大下落速度
         if (velocity.y < maxFallSpeed)
         {
             velocity.y = maxFallSpeed;
@@ -133,6 +144,33 @@ public class PlayerControl : MonoBehaviour
         else if (!isMoving && wasMoving)
         {
             AudioManager.instance.StopSound("Walk");
+        }
+    }
+
+    public void ResetCurrentScene()
+    {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        Debug.Log($"🔄 重新加载当前场景：{currentScene}");
+        SceneManager.LoadScene(currentScene);
+    }
+
+    // ✅ 可视化地面检测 Gizmos
+    private void OnDrawGizmosSelected()
+    {
+        if (groundChecks == null) return;
+
+        Gizmos.color = Color.green;
+
+        foreach (Transform check in groundChecks)
+        {
+            if (check != null)
+            {
+                Gizmos.DrawWireSphere(check.position, checkRadius);
+            }
         }
     }
 }

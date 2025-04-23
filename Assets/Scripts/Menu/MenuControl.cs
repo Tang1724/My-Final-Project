@@ -8,6 +8,9 @@ public class MenuControl : MonoBehaviour
     
     void Update()
     {
+        if (TutorialUI.IsTutorialActive)
+        return;
+        
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (pauseMenuUI.activeSelf)
@@ -55,10 +58,23 @@ public class MenuControl : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        // 停止背景音乐
+        Debug.Log("AudioManager.instance = " + AudioManager.instance);
+
+        // ✅ 恢复时间
+        Time.timeScale = 1f;
+
+        // ✅ 解锁鼠标
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // ✅ 关闭暂停菜单（如果还开着）
+        if (pauseMenuUI != null)
+            pauseMenuUI.SetActive(false);
+
+        // ✅ 停止背景音乐（可选）
         AudioManager.instance.StopMusic();
-        
-        // 加载主菜单场景
+
+        // ✅ 加载主菜单
         SceneManager.LoadScene("Menu");
     }
 

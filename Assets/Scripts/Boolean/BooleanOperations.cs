@@ -1,7 +1,8 @@
 using UnityEngine;
-using LibCSG;
+using LibCSG1;
+using System.Collections;
 
-public class BooleanOperations : MonoBehaviour
+public class BooleanOperations1 : MonoBehaviour
 {
     public GameObject objectA;
     public GameObject objectB;
@@ -13,17 +14,20 @@ public class BooleanOperations : MonoBehaviour
     public PlayerInsideDetector playerInsideDetector;
 
     private CSGBrushOperation csgOperation;
-    private CSGBrush resultBrush;
-    private CSGBrush brushA;
+    private bool isProcessing = false;
+    private float lastOperationTime = -999f;
+    private const float operationCooldown = 1f;
+    public Player playerMouseScript;
 
-    private float lastOperationTime = -0.5f;
-    private const float operationCooldown = 0.5f;
+    // 缓存 Mesh，避免频繁 GC
+    private Mesh reusableMesh;
 
     void Start()
     {
         playerFlashlight = FindObjectOfType<PlayerFlashlight>();
         csgOperation = new CSGBrushOperation();
         ValidateResultObject();
+
         if (operationType == Operation.OPERATION_SUBTRACTION)
         {
             InitializeResultObjectMesh();
@@ -32,37 +36,173 @@ public class BooleanOperations : MonoBehaviour
 
     void Update()
     {
-        if (playerFlashlight.currentCamera == true)
+        if (playerFlashlight.currentCamera && flashlight.IsSpotlightOn)
         {
-            if(flashlight.IsSpotlightOn == true){
-                if (Input.GetKeyDown(KeyCode.F) && Time.time - lastOperationTime >= operationCooldown)
+            if (Input.GetKeyDown(KeyCode.F) && !isProcessing)
+            {
+                if (Time.time - lastOperationTime >= operationCooldown)
                 {
-                    if (ValidateInputObjects())
-                    {
-                        if (operationType == Operation.OPERATION_SUBTRACTION && playerInsideDetector.isPlayerInside)
-                        {
-                            Debug.Log("⚠️ 玩家已在区域内，且当前为 Subtraction 模式，跳过布尔运算。");
-                            return;
-                        }
-
-                        AudioManager.instance.PlaySound("Camera", false);
-                        PerformBooleanOperation();
-                        lastOperationTime = Time.time;
-                    }
+                    lastOperationTime = Time.time;
+                    StartCoroutine(PerformBooleanWithCooldown());
+                }
+                else
+                {
+                    Debug.Log("⏳ 冷却中...");
                 }
             }
         }
+    }
+
+    private IEnumerator PerformBooleanWithCooldown()
+    {
+        isProcessing = true;
+
+        // ⛔ 禁止鼠标控制
+        if (playerMouseScript != null)
+            playerMouseScript.allowMouseControl = false;
+
+        try
+        {
+            if (!ValidateInputObjects())
+                yield break;
+
+            if (operationType == Operation.OPERATION_SUBTRACTION && playerInsideDetector.isPlayerInside)
+            {
+                Debug.Log("⚠️ 玩家在区域中，跳过布尔运算");
+                yield break;
+            }
+
+            AudioManager.instance?.PlaySound("Camera", false);
+            yield return StartCoroutine(PerformBooleanOperationAsync());
+        }
+        finally
+        {
+            // ✅ 恢复鼠标控制
+            if (playerMouseScript != null)
+                playerMouseScript.allowMouseControl = true;
+
+            isProcessing = false;
+        }
+    }
+
+    private IEnumerator PerformBooleanOperationAsync()
+    {
+        GameObject target = null;
+
+        if (flashlight.spot1.activeSelf)
+        {
+            target = objectB;
+            Debug.Log("🔦 Spot1 开启，执行 objectB 的布尔运算...");
+        }
+        else if (flashlight.spot2.activeSelf)
+        {
+            target = objectC;
+            Debug.Log("🔦 Spot2 开启，执行 objectC 的布尔运算...");
+        }
+
+        if (target != null)
+        {
+            yield return StartCoroutine(TryPerformBooleanAsync(objectA, target));
+        }
+
+        var cameraFlash = FindObjectOfType<CameraFlashEffect>();
+        cameraFlash?.TakePhoto();
+    }
+
+    private IEnumerator TryPerformBooleanAsync(GameObject a, GameObject b)
+    {
+        if (!IsMeshReadable(a) || !IsMeshReadable(b)) yield break;
+
+        var brushA = new CSGBrush(a);
+        var brushB = new CSGBrush(b);
+        var result = new CSGBrush(resultObject);
+
+        yield return StartCoroutine(brushA.build_brush_from_mesh_async(
+            a.GetComponent<MeshFilter>().sharedMesh,
+            p => Debug.Log($"🧱 构建 A 中... {p:P0}")
+        ));
+
+        yield return StartCoroutine(brushB.build_brush_from_mesh_async(
+            b.GetComponent<MeshFilter>().sharedMesh,
+            p => Debug.Log($"🧱 构建 B 中... {p:P0}")
+        ));
+
+        yield return StartCoroutine(csgOperation.merge_brushes(
+            operationType,
+            brushA,
+            brushB,
+            result,
+            0.00001f,
+            p => Debug.Log($"🧩 布尔运算进度: {p:P0}")
+        ));
+
+        Mesh resultMesh = result.getMesh();
+
+        if (IsMeshValid(resultMesh))
+        {
+            Debug.Log($"✅ 布尔结果：顶点 {resultMesh.vertexCount}, 三角形 {resultMesh.triangles.Length / 3}");
+            ApplyMeshToResult(resultMesh);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 无效布尔结果。");
+        }
+    }
+
+    private void ApplyMeshToResult(Mesh sourceMesh)
+    {
+        if (resultObject == null) return;
+
+        if (reusableMesh == null)
+            reusableMesh = new Mesh();
+        else
+            reusableMesh.Clear();
+
+        reusableMesh.vertices = sourceMesh.vertices;
+        reusableMesh.triangles = sourceMesh.triangles;
+        reusableMesh.uv = sourceMesh.uv;
+
+        reusableMesh.RecalculateNormals();
+        reusableMesh.RecalculateBounds();
+
+        var mf = resultObject.GetComponent<MeshFilter>();
+        if (mf == null) mf = resultObject.AddComponent<MeshFilter>();
+        mf.sharedMesh = reusableMesh;
+
+        var mc = resultObject.GetComponent<MeshCollider>();
+        if (mc == null) mc = resultObject.AddComponent<MeshCollider>();
+        mc.sharedMesh = null;
+        mc.sharedMesh = reusableMesh;
+    }
+
+    private bool IsMeshValid(Mesh mesh)
+    {
+        return mesh != null && mesh.vertexCount > 0 && mesh.triangles.Length >= 3;
+    }
+
+    private bool IsMeshReadable(GameObject go)
+    {
+        var mf = go.GetComponent<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
+        {
+            Debug.LogError($"❌ {go.name} 没有 MeshFilter 或 Mesh！");
+            return false;
+        }
+
+        if (!mf.sharedMesh.isReadable)
+        {
+            Debug.LogError($"❌ {go.name} 的 Mesh 不可读！");
+            return false;
+        }
+
+        return true;
     }
 
     private void ValidateResultObject()
     {
         if (resultObject == null)
         {
-            Debug.LogError("⚠ 结果物体 (Result Object) 未设置！");
-        }
-        else
-        {
-            resultBrush = new CSGBrush(resultObject);
+            Debug.LogError("⚠️ 结果物体未设置！");
         }
     }
 
@@ -70,141 +210,39 @@ public class BooleanOperations : MonoBehaviour
     {
         if (objectA == null || (objectB == null && objectC == null))
         {
-            Debug.LogWarning("⚠ 缺少 objectA、objectB 或 objectC！");
+            Debug.LogWarning("⚠️ 缺少 objectA 或布尔目标！");
             return false;
         }
         return true;
-    }
-
-    private void PerformBooleanOperation()
-    {
-        if (flashlight.spot1.activeSelf)
-        {
-            Debug.Log("🔦 Spot1 开启，执行 objectB 的布尔运算...");
-            PerformBooleanOperationWith(objectB);
-        }
-        else if (flashlight.spot2.activeSelf)
-        {
-            Debug.Log("🔦 Spot2 开启，执行 objectC 的布尔运算...");
-            PerformBooleanOperationWith(objectC);
-        }
-
-        CameraFlashEffect cameraFlash = FindObjectOfType<CameraFlashEffect>();
-        if (cameraFlash != null)
-        {
-            cameraFlash.TakePhoto();
-        }
-    }
-
-    private void PerformBooleanOperationWith(GameObject objectX)
-    {
-        if (objectX == null) return;
-
-        Debug.Log($"🔄 处理 `{objectX.name}` 的布尔运算...");
-
-        // 初始化 objectA
-        brushA = new CSGBrush(objectA);
-        brushA.build_from_mesh(objectA.GetComponent<MeshFilter>().mesh);
-
-        // 初始化 objectX
-        CSGBrush brushX = new CSGBrush(objectX);
-        brushX.build_from_mesh(objectX.GetComponent<MeshFilter>().mesh);
-
-        // 执行布尔运算
-        ExecuteBooleanOperation(brushA, brushX);
-    }
-
-    private void ExecuteBooleanOperation(CSGBrush brushA, CSGBrush brushX)
-    {
-        if (brushA == null || brushX == null)
-        {
-            Debug.LogWarning("⚠ brushA 或 brushX 为空！");
-            return;
-        }
-
-        CSGBrush tempResult = new CSGBrush(resultObject);
-        csgOperation.merge_brushes(operationType, brushA, brushX, ref tempResult);
-        brushA = tempResult;
-
-        UpdateResultObject(brushA);
-    }
-
-    private void UpdateResultObject(CSGBrush brush)
-    {
-        Mesh resultMesh = brush.getMesh();
-        if (IsMeshValid(resultMesh))
-        {
-            UpdateMesh(resultMesh);
-            UpdateMeshCollider(resultMesh);
-            Debug.Log("✅ 布尔运算结果已更新！");
-        }
-        else
-        {
-            Debug.LogWarning("⚠ 布尔运算结果无效，跳过更新！");
-        }
-    }
-
-    private bool IsMeshValid(Mesh mesh)
-    {
-        return mesh != null && mesh.vertices.Length > 0;
-    }
-
-    private void UpdateMesh(Mesh resultMesh)
-    {
-        Mesh resultObjectMesh = resultObject.GetComponent<MeshFilter>().mesh;
-        resultObjectMesh.Clear();
-        resultObjectMesh.vertices = resultMesh.vertices;
-        resultObjectMesh.triangles = resultMesh.triangles;
-        resultObjectMesh.uv = resultMesh.uv;
-        resultObjectMesh.RecalculateNormals();
-        resultObjectMesh.RecalculateBounds();
-    }
-
-    private void UpdateMeshCollider(Mesh resultMesh)
-    {
-        MeshCollider meshCollider = resultObject.GetComponent<MeshCollider>();
-        if (meshCollider == null)
-        {
-            meshCollider = resultObject.AddComponent<MeshCollider>();
-        }
-        meshCollider.sharedMesh = resultMesh;
     }
 
     private void InitializeResultObjectMesh()
     {
         if (resultObject == null || objectA == null)
         {
-            Debug.LogError("⚠ resultObject 或 objectA 未设置！");
+            Debug.LogError("⚠️ 初始化失败！resultObject 或 objectA 未设置！");
             return;
         }
 
-        MeshFilter objectAMeshFilter = objectA.GetComponent<MeshFilter>();
-        if (objectAMeshFilter == null || objectAMeshFilter.sharedMesh == null)
+        var sourceMF = objectA.GetComponent<MeshFilter>();
+        if (sourceMF == null || sourceMF.sharedMesh == null)
         {
-            Debug.LogError("⚠ objectA 缺少有效的 MeshFilter！");
+            Debug.LogError("⚠️ objectA 缺少有效的 Mesh！");
             return;
         }
 
-        MeshFilter resultMeshFilter = resultObject.GetComponent<MeshFilter>();
-        if (resultMeshFilter == null)
-        {
-            resultMeshFilter = resultObject.AddComponent<MeshFilter>();
-        }
+        var resultMF = resultObject.GetComponent<MeshFilter>();
+        if (resultMF == null) resultMF = resultObject.AddComponent<MeshFilter>();
 
-        if (resultObject.GetComponent<MeshRenderer>() == null)
-        {
-            resultObject.AddComponent<MeshRenderer>();
-        }
+        var renderer = resultObject.GetComponent<MeshRenderer>();
+        if (renderer == null) renderer = resultObject.AddComponent<MeshRenderer>();
 
-        resultMeshFilter.sharedMesh = Instantiate(objectAMeshFilter.sharedMesh);
+        resultMF.sharedMesh = Instantiate(sourceMF.sharedMesh);
 
-        MeshCollider meshCollider = resultObject.GetComponent<MeshCollider>();
-        if (meshCollider == null)
-        {
-            meshCollider = resultObject.AddComponent<MeshCollider>();
-        }
-        meshCollider.sharedMesh = resultMeshFilter.sharedMesh;
+        var mc = resultObject.GetComponent<MeshCollider>();
+        if (mc == null) mc = resultObject.AddComponent<MeshCollider>();
+        mc.sharedMesh = resultMF.sharedMesh;
 
-        Debug.Log("✅ resultObject 已初始化！");
+        Debug.Log("✅ resultObject Mesh 初始化完成！");
     }
 }

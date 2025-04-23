@@ -51,6 +51,8 @@ public class MenuNext : MonoBehaviour
     {
         if (fadeTransition == null) return;
 
+        Debug.Log($"[DEBUG] 当前 FadeTransition 对象: {fadeTransition.gameObject.name}, nextLevelName: {fadeTransition.nextLevelName}");
+
         // 检查下一关物体
         if (nextLevelBoolean != null && nextLevelBoolean.Length > 0)
         {

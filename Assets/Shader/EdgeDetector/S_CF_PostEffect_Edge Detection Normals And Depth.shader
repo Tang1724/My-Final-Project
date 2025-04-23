@@ -67,6 +67,8 @@
             return ((diffNormal.x + diffNormal.y) < 0.1 && diffDepth < 0.01) ? 1.0 : 0.0;
         }
 
+
+
         fixed4 frag(v2f i) : SV_Target {
             half4 center = tex2D(_CameraDepthNormalsTexture, i.uv[0]);
             half4 right  = tex2D(_CameraDepthNormalsTexture, i.uv[1]);
@@ -84,7 +86,9 @@
             fixed4 onlyEdgeColor = lerp(_EdgeColor, _BackgroundColor, edge);
             fixed4 withEdgeColor = lerp(_EdgeColor, tex2D(_MainTex, i.uv[0]), edge);
             return lerp(withEdgeColor, onlyEdgeColor, _EdgeOnly);
+            return tex2D(_CameraDepthNormalsTexture, i.uv[0]);
         }
+
 
         ENDCG
 

@@ -13,9 +13,17 @@ public class PlayerFlashlight : MonoBehaviour
     private SniperScope sniperScope;
     public bool currentCamera = false;
 
+    private CharacterController characterController;
+
     void Start()
     {
         sniperScope = FindObjectOfType<SniperScope>();
+        characterController = GetComponent<CharacterController>();
+
+        if (characterController == null)
+        {
+            Debug.LogError("玩家未找到 CharacterController 组件！");
+        }
     }
 
     void Update()
@@ -30,16 +38,18 @@ public class PlayerFlashlight : MonoBehaviour
     {
         if (currentFlashlight == null)
         {
-            // 尝试捡起一个手电筒
             GameObject nearestFlashlight = GetNearestFlashlight();
             if (nearestFlashlight != null)
             {
-                // 捡起手电筒
                 currentFlashlight = nearestFlashlight;
-                currentFlashlight.transform.SetParent(holdPoint); // 设置父对象为持有点
-                currentFlashlight.transform.localPosition = Vector3.zero; // 重置位置使其位于持有点
-                currentFlashlight.transform.localRotation = Quaternion.identity; // 重置旋转使其与持有点对齐
+                currentFlashlight.transform.SetParent(holdPoint);
+                currentFlashlight.transform.localPosition = Vector3.zero;
+                currentFlashlight.transform.localRotation = Quaternion.identity;
                 currentCamera = true;
+
+                // 忽略与 CharacterController 的碰撞
+                IgnoreCollisionWithCharacterController(currentFlashlight, true);
+
                 Debug.Log($"捡起了手电筒：{currentFlashlight.name}");
             }
             else
@@ -49,11 +59,14 @@ public class PlayerFlashlight : MonoBehaviour
         }
         else
         {
-            if (sniperScope.isScoping == false)
+            if (sniperScope != null && sniperScope.isScoping == false)
             {
-                // 放下当前持有的手电筒
                 Debug.Log($"放下了手电筒：{currentFlashlight.name}");
-                currentFlashlight.transform.SetParent(null); // 移除父对象
+
+                // 恢复与 CharacterController 的碰撞
+                IgnoreCollisionWithCharacterController(currentFlashlight, false);
+
+                currentFlashlight.transform.SetParent(null);
                 currentCamera = false;
                 currentFlashlight = null;
             }
@@ -65,7 +78,6 @@ public class PlayerFlashlight : MonoBehaviour
         GameObject nearestFlashlight = null;
         float nearestDistance = float.MaxValue;
 
-        // 遍历手电筒列表，找到最近的手电筒
         foreach (GameObject flashlight in flashlights)
         {
             if (flashlight != null)
@@ -80,5 +92,18 @@ public class PlayerFlashlight : MonoBehaviour
         }
 
         return nearestFlashlight;
+    }
+
+    void IgnoreCollisionWithCharacterController(GameObject flashlight, bool ignore)
+    {
+        if (characterController == null) return;
+
+        Collider[] flashlightColliders = flashlight.GetComponentsInChildren<Collider>();
+        Collider playerCollider = characterController; // CharacterController 继承自 Collider
+
+        foreach (Collider fc in flashlightColliders)
+        {
+            Physics.IgnoreCollision(fc, playerCollider, ignore);
+        }
     }
 }

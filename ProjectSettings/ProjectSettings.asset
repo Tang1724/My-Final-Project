@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: My project (1)
+  productName: FinalProject
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -49,7 +49,7 @@ PlayerSettings:
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
   unsupportedMSAAFallback: 0
-  m_SpriteBatchVertexThreshold: 300
+  m_SpriteBatchVertexThreshold: 3000
   m_MTRendering: 1
   mipStripping: 0
   numberOfMipsStripped: 0
@@ -158,7 +158,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.My-project--1-
+    Standalone: com.DefaultCompany.FinalProject
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -279,7 +279,14 @@ PlayerSettings:
   AndroidMinifyDebug: 0
   AndroidValidateAppBundleSize: 1
   AndroidAppBundleSizeToValidate: 150
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: 41c2086794006c64aa3c5127c03eaa36, type: 3}
+      m_Width: 128
+      m_Height: 128
+      m_Kind: 0
   m_BuildTargetPlatformIcons: []
   m_BuildTargetBatching:
   - m_BuildTarget: Standalone
@@ -366,12 +373,16 @@ PlayerSettings:
     m_EncodingQuality: 1
   - m_BuildTarget: tvOS
     m_EncodingQuality: 1
+  - m_BuildTarget: Standalone
+    m_EncodingQuality: 1
   m_BuildTargetGroupHDRCubemapEncodingQuality:
   - m_BuildTarget: Android
     m_EncodingQuality: 1
   - m_BuildTarget: iPhone
     m_EncodingQuality: 1
   - m_BuildTarget: tvOS
+    m_EncodingQuality: 1
+  - m_BuildTarget: Standalone
     m_EncodingQuality: 1
   m_BuildTargetGroupLightmapSettings: []
   m_BuildTargetGroupLoadStoreDebugModeSettings: []
@@ -659,9 +670,11 @@ PlayerSettings:
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
-  scriptingBackend: {}
+  scriptingBackend:
+    Standalone: 0
   il2cppCompilerConfiguration: {}
-  il2cppCodeGeneration: {}
+  il2cppCodeGeneration:
+    Standalone: 1
   managedStrippingLevel:
     EmbeddedLinux: 1
     GameCoreScarlett: 1

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,9 +9,15 @@ public class Player : MonoBehaviour
     private float minYAngle = -45f;
     private float maxYAngle = 45f;
 
+    // ✅ 新增：是否允许鼠标移动
+    public bool allowMouseControl = true;
+
     void Update()
     {
-        ProcessMouseMovement();
+        if (allowMouseControl)
+        {
+            ProcessMouseMovement();
+        }
     }
 
     private void ProcessMouseMovement()
@@ -30,10 +35,8 @@ public class Player : MonoBehaviour
 
     private void ApplyRotation(float mouseX, float mouseY)
     {
-        // Horizontal rotation
         player.Rotate(Vector3.up * mouseX);
 
-        // Vertical rotation
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, minYAngle, maxYAngle);
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);

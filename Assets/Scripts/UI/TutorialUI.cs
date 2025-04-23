@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class TutorialUI : MonoBehaviour
 {
+    public static bool IsTutorialActive { get; private set; } = false;
     [SerializeField] public GameObject tutorialPanel;
     [SerializeField] private KeyCode hideKey = KeyCode.F;
     
@@ -62,6 +63,9 @@ public class TutorialUI : MonoBehaviour
         {
             tutorialPanel.SetActive(false);
             ResumeGame();
+
+            // ✅ 设置为 false
+            TutorialUI.IsTutorialActive = false;
         }
     }
 }

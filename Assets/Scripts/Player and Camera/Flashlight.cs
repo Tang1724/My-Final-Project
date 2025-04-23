@@ -12,6 +12,9 @@ public class Flashlight : MonoBehaviour
     [Header("区域检测器列表")]
     public PlayerInsideDetector[] insideDetectors; // ✅ 多个区域
 
+    [Header("需要控制的物品碰撞体")]
+    public Collider[] targetColliders; // ✅ 拖拽需要启/禁的碰撞体
+
     void Start()
     {
         playerFlashlight = FindObjectOfType<PlayerFlashlight>();
@@ -22,7 +25,10 @@ public class Flashlight : MonoBehaviour
 
     void Update()
     {
-        if (playerFlashlight.currentCamera == true)
+        // ✅ 控制 Collider 启用状态
+        UpdateCollidersState();
+
+        if (playerFlashlight != null && playerFlashlight.currentCamera == true)
         {
             // ✅ 检查是否有任意一个区域内为 true
             bool playerInsideAny = false;
@@ -55,6 +61,22 @@ public class Flashlight : MonoBehaviour
         {
             spot1.SetActive(false);
             spot2.SetActive(false);
+        }
+    }
+
+    void UpdateCollidersState()
+    {
+        if (targetColliders == null || targetColliders.Length == 0 || playerFlashlight == null)
+            return;
+
+        bool enableColliders = !playerFlashlight.currentCamera;
+
+        foreach (var col in targetColliders)
+        {
+            if (col != null)
+            {
+                col.enabled = enableColliders;
+            }
         }
     }
 }

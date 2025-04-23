@@ -16,11 +16,11 @@ public class EdgeDetectNormalsAndDepth : MonoBehaviour {
     [ColorUsage(true,true)]
     public Color backgroundColor = Color.white;
 
-	public float sampleDistance = 1.0f;
+	public float sampleDistance = 5.0f;
 
-	public float sensitivityDepth = 1.0f;
+	public float sensitivityDepth = 5.0f;
 
-	public float sensitivityNormals = 1.0f;
+	public float sensitivityNormals = 5.0f;
 	
 	void OnEnable() {
 		GetComponent<Camera>().depthTextureMode |= DepthTextureMode.DepthNormals;

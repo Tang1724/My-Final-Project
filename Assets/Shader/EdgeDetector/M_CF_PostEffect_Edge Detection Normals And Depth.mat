@@ -30,9 +30,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _EdgeOnly: 0
-    - _SampleDistance: 2
+    - _SampleDistance: 5
     m_Colors:
-    - _BackgroundColor: {r: 0.043137256, g: 0.1509434, b: 0.04186543, a: 1}
-    - _EdgeColor: {r: 0.9473069, g: 0.9559735, b: 0.597202, a: 1}
-    - _Sensitivity: {r: 1, g: 1, b: 0, a: 0}
+    - _BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EdgeColor: {r: 0.95686275, g: 0.9490196, b: 0.59607846, a: 1}
+    - _Sensitivity: {r: 5, g: 5, b: 0, a: 0}
   m_BuildTextureStacks: []
