@@ -630,6 +630,7 @@ MonoBehaviour:
   operationType: 1
   flashlight: {fileID: 217373537}
   playerInsideDetector: {fileID: 378910505}
+  playerMouseScript: {fileID: 0}
 --- !u!1 &64218978
 GameObject:
   m_ObjectHideFlags: 0
@@ -3011,6 +3012,7 @@ MonoBehaviour:
   operationType: 1
   flashlight: {fileID: 217373537}
   playerInsideDetector: {fileID: 1985769549}
+  playerMouseScript: {fileID: 0}
 --- !u!1 &304168241
 GameObject:
   m_ObjectHideFlags: 0
@@ -4848,7 +4850,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -4940,15 +4942,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: da9b73b478f35c245beda4eedbed3e59, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.15
+      value: -25.03
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: da9b73b478f35c245beda4eedbed3e59, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 13
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: da9b73b478f35c245beda4eedbed3e59, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.5803556
+      value: -2.02
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: da9b73b478f35c245beda4eedbed3e59, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6735,6 +6737,7 @@ MonoBehaviour:
   operationType: 1
   flashlight: {fileID: 217373537}
   playerInsideDetector: {fileID: 1008592227}
+  playerMouseScript: {fileID: 0}
 --- !u!1 &972912958
 GameObject:
   m_ObjectHideFlags: 0
@@ -6876,6 +6879,7 @@ MonoBehaviour:
   operationType: 2
   flashlight: {fileID: 217373537}
   playerInsideDetector: {fileID: 571797028}
+  playerMouseScript: {fileID: 0}
 --- !u!1 &981495168
 GameObject:
   m_ObjectHideFlags: 0
@@ -7805,6 +7809,7 @@ MonoBehaviour:
   operationType: 2
   flashlight: {fileID: 217373537}
   playerInsideDetector: {fileID: 961197820}
+  playerMouseScript: {fileID: 0}
 --- !u!1 &1203652438
 GameObject:
   m_ObjectHideFlags: 0
