@@ -57,7 +57,7 @@ public class BooleanOperations1 : MonoBehaviour
     {
         isProcessing = true;
 
-        // ⛔ 禁止鼠标控制
+        // 禁止鼠标控制
         if (playerMouseScript != null)
             playerMouseScript.allowMouseControl = false;
 
@@ -68,7 +68,7 @@ public class BooleanOperations1 : MonoBehaviour
 
             if (operationType == Operation.OPERATION_SUBTRACTION && playerInsideDetector.isPlayerInside)
             {
-                Debug.Log("⚠️ 玩家在区域中，跳过布尔运算");
+                Debug.Log(" 玩家在区域中，跳过布尔运算");
                 yield break;
             }
 
@@ -77,7 +77,7 @@ public class BooleanOperations1 : MonoBehaviour
         }
         finally
         {
-            // ✅ 恢复鼠标控制
+            // 恢复鼠标控制
             if (playerMouseScript != null)
                 playerMouseScript.allowMouseControl = true;
 
@@ -92,12 +92,12 @@ public class BooleanOperations1 : MonoBehaviour
         if (flashlight.spot1.activeSelf)
         {
             target = objectB;
-            Debug.Log("🔦 Spot1 开启，执行 objectB 的布尔运算...");
+            Debug.Log("Spot1 开启，执行 objectB 的布尔运算...");
         }
         else if (flashlight.spot2.activeSelf)
         {
             target = objectC;
-            Debug.Log("🔦 Spot2 开启，执行 objectC 的布尔运算...");
+            Debug.Log("Spot2 开启，执行 objectC 的布尔运算...");
         }
 
         if (target != null)
@@ -119,12 +119,12 @@ public class BooleanOperations1 : MonoBehaviour
 
         yield return StartCoroutine(brushA.build_brush_from_mesh_async(
             a.GetComponent<MeshFilter>().sharedMesh,
-            p => Debug.Log($"🧱 构建 A 中... {p:P0}")
+            p => Debug.Log($" 构建 A 中... {p:P0}")
         ));
 
         yield return StartCoroutine(brushB.build_brush_from_mesh_async(
             b.GetComponent<MeshFilter>().sharedMesh,
-            p => Debug.Log($"🧱 构建 B 中... {p:P0}")
+            p => Debug.Log($"构建 B 中... {p:P0}")
         ));
 
         yield return StartCoroutine(csgOperation.merge_brushes(
@@ -132,20 +132,20 @@ public class BooleanOperations1 : MonoBehaviour
             brushA,
             brushB,
             result,
-            0.00001f,
-            p => Debug.Log($"🧩 布尔运算进度: {p:P0}")
+            0.001f,
+            p => Debug.Log($"布尔运算进度: {p:P0}")
         ));
 
         Mesh resultMesh = result.getMesh();
 
         if (IsMeshValid(resultMesh))
         {
-            Debug.Log($"✅ 布尔结果：顶点 {resultMesh.vertexCount}, 三角形 {resultMesh.triangles.Length / 3}");
+            Debug.Log($"布尔结果：顶点 {resultMesh.vertexCount}, 三角形 {resultMesh.triangles.Length / 3}");
             ApplyMeshToResult(resultMesh);
         }
         else
         {
-            Debug.LogWarning("⚠️ 无效布尔结果。");
+            Debug.LogWarning("无效布尔结果。");
         }
     }
 
@@ -185,13 +185,13 @@ public class BooleanOperations1 : MonoBehaviour
         var mf = go.GetComponent<MeshFilter>();
         if (mf == null || mf.sharedMesh == null)
         {
-            Debug.LogError($"❌ {go.name} 没有 MeshFilter 或 Mesh！");
+            Debug.LogError($"{go.name} 没有 MeshFilter 或 Mesh！");
             return false;
         }
 
         if (!mf.sharedMesh.isReadable)
         {
-            Debug.LogError($"❌ {go.name} 的 Mesh 不可读！");
+            Debug.LogError($"{go.name} 的 Mesh 不可读！");
             return false;
         }
 
@@ -202,7 +202,7 @@ public class BooleanOperations1 : MonoBehaviour
     {
         if (resultObject == null)
         {
-            Debug.LogError("⚠️ 结果物体未设置！");
+            Debug.LogError("结果物体未设置！");
         }
     }
 
@@ -210,7 +210,7 @@ public class BooleanOperations1 : MonoBehaviour
     {
         if (objectA == null || (objectB == null && objectC == null))
         {
-            Debug.LogWarning("⚠️ 缺少 objectA 或布尔目标！");
+            Debug.LogWarning("缺少 objectA 或布尔目标！");
             return false;
         }
         return true;
@@ -220,14 +220,14 @@ public class BooleanOperations1 : MonoBehaviour
     {
         if (resultObject == null || objectA == null)
         {
-            Debug.LogError("⚠️ 初始化失败！resultObject 或 objectA 未设置！");
+            Debug.LogError("初始化失败！resultObject 或 objectA 未设置！");
             return;
         }
 
         var sourceMF = objectA.GetComponent<MeshFilter>();
         if (sourceMF == null || sourceMF.sharedMesh == null)
         {
-            Debug.LogError("⚠️ objectA 缺少有效的 Mesh！");
+            Debug.LogError("objectA 缺少有效的 Mesh！");
             return;
         }
 
@@ -243,6 +243,6 @@ public class BooleanOperations1 : MonoBehaviour
         if (mc == null) mc = resultObject.AddComponent<MeshCollider>();
         mc.sharedMesh = resultMF.sharedMesh;
 
-        Debug.Log("✅ resultObject Mesh 初始化完成！");
+        Debug.Log("resultObject Mesh 初始化完成！");
     }
 }

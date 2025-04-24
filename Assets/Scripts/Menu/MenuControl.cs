@@ -60,21 +60,21 @@ public class MenuControl : MonoBehaviour
     {
         Debug.Log("AudioManager.instance = " + AudioManager.instance);
 
-        // ✅ 恢复时间
+        // 恢复时间
         Time.timeScale = 1f;
 
-        // ✅ 解锁鼠标
+        // 解锁鼠标
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // ✅ 关闭暂停菜单（如果还开着）
+        //  关闭暂停菜单（如果还开着）
         if (pauseMenuUI != null)
             pauseMenuUI.SetActive(false);
 
-        // ✅ 停止背景音乐（可选）
+        // 停止背景音乐（可选）
         AudioManager.instance.StopMusic();
 
-        // ✅ 加载主菜单
+        // 加载主菜单
         SceneManager.LoadScene("Menu");
     }
 

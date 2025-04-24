@@ -27,7 +27,7 @@ public class PlayerControl : MonoBehaviour
     public float checkRadius = 0.3f;
 
     [Tooltip("可被识别为地面的图层，支持多选")] 
-    public LayerMask groundLayerMask;    // ✅ 多选 LayerMask
+    public LayerMask groundLayerMask;    // 多选 LayerMask
 
     public bool isGrounded;
 
@@ -158,7 +158,7 @@ public class PlayerControl : MonoBehaviour
         SceneManager.LoadScene(currentScene);
     }
 
-    // ✅ 可视化地面检测 Gizmos
+    // 可视化地面检测 Gizmos
     private void OnDrawGizmosSelected()
     {
         if (groundChecks == null) return;

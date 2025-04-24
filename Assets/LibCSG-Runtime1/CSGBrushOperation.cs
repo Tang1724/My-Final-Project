@@ -20,7 +20,7 @@ namespace LibCSG1
 
         public CSGBrushOperation() {}
 
-        public IEnumerator merge_brushes(Operation operation, CSGBrush brush_a, CSGBrush brush_b, CSGBrush merged_brush, float tolerance = 0.00001f, Action<float> onProgress = null)
+        public IEnumerator merge_brushes(Operation operation, CSGBrush brush_a, CSGBrush brush_b, CSGBrush merged_brush, float tolerance = 0.001f, Action<float> onProgress = null)
         {
             Build2DFaceCollection build2DFaceCollection;
             build2DFaceCollection.build2DFacesA = new Dictionary<int, Build2DFaces>(brush_a.faces.Length);
@@ -29,12 +29,12 @@ namespace LibCSG1
             brush_a.regen_face_aabbs();
             brush_b.regen_face_aabbs();
 
-            // ✅ 分帧执行 update_faces
+            // 分帧执行 update_faces
             yield return update_faces_async(brush_a, brush_b, build2DFaceCollection, tolerance, progress => {
                 onProgress?.Invoke(progress * 0.4f); // 前 40% 分配给交叉面处理
             });
 
-            // ✅ Mesh 合并
+            // Mesh 合并
             MeshMerge mesh_merge = new MeshMerge(
                 brush_a.faces.Length + build2DFaceCollection.build2DFacesA.Count,
                 brush_b.faces.Length + build2DFaceCollection.build2DFacesB.Count
@@ -77,16 +77,15 @@ namespace LibCSG1
 
             Array.Clear(merged_brush.faces, 0, merged_brush.faces.Length);
 
-            // ✅ 分帧执行布尔运算，后 60%
+            // 分帧执行布尔运算，后 60%
             yield return mesh_merge.DoOperationAsync(operation, merged_brush, 10, (progress) => {
                 onProgress?.Invoke(0.4f + 0.6f * progress);
             });
 
             mesh_merge = null;
-            GC.Collect();
         }
 
-        // ✅ 分帧的 update_faces
+        // 分帧的 update_faces
         private IEnumerator update_faces_async(CSGBrush brush_a, CSGBrush brush_b, Build2DFaceCollection collection, float vertex_snap, Action<float> onProgress = null)
         {
             int total = brush_a.faces.Length * brush_b.faces.Length;
@@ -109,7 +108,7 @@ namespace LibCSG1
             onProgress?.Invoke(1f);
         }
 
-        // ⚠️ 保持不变：用于检测交叉面并插入
+        // 保持不变：用于检测交叉面并插入
         void update_faces(ref CSGBrush brush_a, int face_idx_a, ref CSGBrush brush_b, int face_idx_b, ref Build2DFaceCollection collection, float vertex_snap)
         {
             Vector3[] vertices_a = {

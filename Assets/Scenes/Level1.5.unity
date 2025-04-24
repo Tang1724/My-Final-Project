@@ -14486,6 +14486,10 @@ PrefabInstance:
       propertyPath: groundChecks.Array.data[4]
       value: 
       objectReference: {fileID: 1078961921}
+    - target: {fileID: 5297883463209025176, guid: 73c6909c740e8dd438094ead3959ddf0, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 12279
+      objectReference: {fileID: 0}
     - target: {fileID: 5889337462251363369, guid: 73c6909c740e8dd438094ead3959ddf0, type: 3}
       propertyPath: flashImage
       value: 

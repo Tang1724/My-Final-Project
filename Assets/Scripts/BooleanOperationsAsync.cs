@@ -82,7 +82,7 @@ public class BooleanOperationsSplit : MonoBehaviour
     {
         if (!IsMeshReadable(a) || !IsMeshReadable(b))
         {
-            Debug.LogError("❌ Mesh 不可读，取消布尔运算");
+            Debug.LogError(" Mesh 不可读，取消布尔运算");
             yield break;
         }
 
@@ -105,12 +105,12 @@ public class BooleanOperationsSplit : MonoBehaviour
         Mesh resultMesh = result.getMesh();
         if (IsMeshValid(resultMesh))
         {
-            Debug.Log($"✅ 布尔完成：顶点={resultMesh.vertexCount}, 三角形={resultMesh.triangles.Length / 3}");
+            Debug.Log($" 布尔完成：顶点={resultMesh.vertexCount}, 三角形={resultMesh.triangles.Length / 3}");
             ApplyMeshToResult(resultMesh);
         }
         else
         {
-            Debug.LogWarning("⚠️ 布尔结果无效");
+            Debug.LogWarning(" 布尔结果无效");
         }
     }
 
@@ -151,7 +151,7 @@ public class BooleanOperationsSplit : MonoBehaviour
     private void ValidateResultObject()
     {
         if (resultObject == null)
-            Debug.LogError("⚠️ resultObject 未设置");
+            Debug.LogError("resultObject 未设置");
     }
 
     private bool ValidateInputObjects()
@@ -163,14 +163,14 @@ public class BooleanOperationsSplit : MonoBehaviour
     {
         if (resultObject == null || objectA == null)
         {
-            Debug.LogError("⚠️ 初始化失败：未设置 objectA 或 resultObject");
+            Debug.LogError("初始化失败：未设置 objectA 或 resultObject");
             return;
         }
 
         var sourceMF = objectA.GetComponent<MeshFilter>();
         if (sourceMF == null || sourceMF.sharedMesh == null)
         {
-            Debug.LogError("⚠️ objectA 没有有效 Mesh");
+            Debug.LogError("objectA 没有有效 Mesh");
             return;
         }
 
@@ -183,6 +183,6 @@ public class BooleanOperationsSplit : MonoBehaviour
         var mc = resultObject.GetComponent<MeshCollider>() ?? resultObject.AddComponent<MeshCollider>();
         mc.sharedMesh = resultMF.sharedMesh;
 
-        Debug.Log("✅ ResultObject 初始化完成");
+        Debug.Log("ResultObject 初始化完成");
     }
 }
